@@ -92,3 +92,10 @@ data%>%select(outcome_cgi_hosp60d)%>%table()
 
 
 saveRDS(data,'./Data/Derived/data_with_outcome.RDS')
+
+#######################################################
+
+# check for correlation between symptoms:
+round(data%>%
+        select(symptom_1,symptom_2,symptom_3,symptom_4,symptom_5)%>%
+        cor(),3)
