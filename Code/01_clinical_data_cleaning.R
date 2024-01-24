@@ -25,6 +25,37 @@ ggplot(admissions,aes(x=date_of_admission))+
 
 # no discontinuity observed
 
+# check to see whether all admissions are distinct for an individual patient
+# note only need to check those who had multiple admissions
+recur_adm_ids <- admissions %>%
+  group_by(id)%>%
+  summarise(N=n())%>%
+  filter(N>1)%>%
+  pull(id)
+
+recur_admission <- admissions %>% filter(id %in% recur_adm_ids)%>%
+  arrange(id,date_of_admission)
+
+recur_admission$overlap<-0
+for(i in 2:nrow(recur_admission)){
+  recur_admission$overlap[i]<- ifelse(recur_admission$id[(i-1)]!=recur_admission$id[i],0,
+                                      ifelse(recur_admission$date_of_discharge[(i-1)]>recur_admission$date_of_admission[i],1,0))
+}
+
+#review those with overlaps:
+View(recur_admission[sort(c(which(recur_admission$overlap==1)-1,which(recur_admission$overlap==1))),])
+
+# inconsistent data between entries on med hist and trt
+# check for more entries from these patients:
+
+check_ids <- recur_admission[which(recur_admission$overlap==1),]$id
+admissions %>% 
+  filter(id %in% check_ids)
+
+# all entries are those with overlap. Therefore remove all these entries.
+admissions <- admissions %>% 
+  filter(!id %in% check_ids)
+
 # create field for length of stay:
 admissions <- admissions %>%
   mutate(los = difftime(date_of_discharge,date_of_admission,units = 'days'))
