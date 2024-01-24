@@ -80,11 +80,11 @@ data <- data %>%
          gaf_regrouped = ifelse(gaf_lv == 8,0,
                                 ifelse(gaf_lv %in% c(6,7),1,
                                        ifelse(gaf_lv %in% c(4,5),2,3))),
-         symptom_count = as.numeric(symptom_sleep) + 
-           as.numeric(symptom_anhedonia)+
-           as.numeric(symptom_appetite) +
-           as.numeric(symptom_depressed) + 
-           as.numeric(symptome_suicidal))
+         symptom_count = as.numeric(symptom_1) + 
+           as.numeric(symptom_2)+
+           as.numeric(symptom_3) +
+           as.numeric(symptom_4) + 
+           as.numeric(symptom_5))
 
 data%>%select(outcome_cgi_only)%>%table()
 data%>%select(outcome_cgi_hosp1y)%>%table()
@@ -99,3 +99,36 @@ saveRDS(data,'./Data/Derived/data_with_outcome.RDS')
 round(data%>%
         select(symptom_1,symptom_2,symptom_3,symptom_4,symptom_5)%>%
         cor(),3)
+
+
+#######################################################
+# Transition between CGI-S from admission to discharge
+# first create matrix 
+t_matrix <- data%>%
+  select(cgis_adm,cgis_dis)%>%
+  table()
+
+t_matrix_2 <- data%>%
+  mutate(cgis_adm_g = ifelse(as.numeric(cgis_adm)<=3,0,1),
+         cgis_dis_g = ifelse(as.numeric(cgis_dis)<=3,0,1))%>%
+  select(cgis_adm_g,cgis_dis_g)%>%
+  table()
+
+library(diagram)
+plotmat(t_matrix_2)
+
+cgis_admission_totals <- data %>% pull(cgis_adm)%>%table()
+
+transition_df <- data %>%
+  group_by(cgis_adm,cgis_dis)%>%
+  summarise(N=n())%>%
+  mutate(t_prob = round(ifelse(cgis_adm==1,N/as.numeric(cgis_admission_totals[1]),
+                       ifelse(cgis_adm==2,N/as.numeric(cgis_admission_totals[2]),
+                              ifelse(cgis_adm==3,N/as.numeric(cgis_admission_totals[3]),
+                                     ifelse(cgis_adm==4,N/as.numeric(cgis_admission_totals[4]),
+                                            ifelse(cgis_adm==5,N/as.numeric(cgis_admission_totals[5]),
+                                                   ifelse(cgis_adm==6,N/as.numeric(cgis_admission_totals[6]),N/as.numeric(cgis_admission_totals[7]))))))),3)
+)
+
+write_csv(transition_df,'./Outputs/transitions_cgi.csv')
+

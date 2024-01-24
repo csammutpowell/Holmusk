@@ -17,8 +17,11 @@ data <- left_join(left_join(admissions,costs),demographics)
 
 # perform patient selection to cohort of interest, i.e. at least one year follow up from admission:
 data_selected <- data%>%
-  filter(date_of_discharge<=as.Date(max(data$date_of_admission)-years(1)) &
-           date_of_admission>=as.Date(min(data$date_of_admission)+years(1)))
+  filter(date_of_discharge<=as.Date(max(data$date_of_admission)-years(1)))
+
+# perform patient selection to cohort of interest, i.e. at least one year follow up prior to admission:
+data_selected <- data_selected%>%
+  filter(date_of_admission>=as.Date(min(data$date_of_admission)+years(1)))
 
 # create a variable to count number of hospitalisations in the previous 12 months
 data_selected$prev_hosps <- 0
