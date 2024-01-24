@@ -4,6 +4,7 @@ This directory provides all the code and documentation for the technical intervi
 The task requires use of synthetic data, provided by Holmusk, to understand the treatment of major depressive disorder.
 
 The data provided consists of 4 files:
+
 1. demographics (demographics.csv)
 2. secondary care data (clinical_data.csv)
 3. linkage data between admission and billing (bill_id.csv)
@@ -13,7 +14,7 @@ Data can be linked across all files using either patient ID or billing ID and da
 
 ## Initial observations
 ### Data Strengths:
-1. Coverage over risk factors, i.e. age, BMI, gender, race(?), comorbidities, treatments and symptoms, GAF
+1. Coverage over risk factors, i.e. age, BMI, gender, race, comorbidities, treatments and symptoms, GAF
 2. Multiple outcomes to consider: Length of stay, cost of stay, CGI-S at arrival, change in CGI-S arrival to discharge 
 
 ### Data limitations: 

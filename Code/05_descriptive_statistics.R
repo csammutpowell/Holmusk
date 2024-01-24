@@ -130,5 +130,8 @@ transition_df <- data %>%
                                                    ifelse(cgis_adm==6,N/as.numeric(cgis_admission_totals[6]),N/as.numeric(cgis_admission_totals[7]))))))),3)
 )
 
+
+
+write_csv(as.data.frame(t_matrix)%>%dcast(cgis_adm~cgis_dis),'./Outputs/transitions_matrix_cgi.csv')
 write_csv(transition_df,'./Outputs/transitions_cgi.csv')
 
